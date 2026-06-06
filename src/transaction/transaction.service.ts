@@ -1,34 +1,53 @@
 import { Injectable } from '@nestjs/common';
-import { Transaction, TransactionStatus, TransactionSummary } from './transaction.dto';
+import { Transaction } from './transaction.entity';
+import { TransactionStatus, TransactionType } from './transaction.enum';
+import { TransactionSummary } from './transaction.interface';
 
 @Injectable()
 export class TransactionService {
-  // Simulated transaction data 
-  private readonly transactions: Transaction[] = [
-    { id: '1', amount: 500, status: TransactionStatus.SUCCESS },
-    { id: '2', amount: 200, status: TransactionStatus.FAILED },
-    { id: '3', amount: 750, status: TransactionStatus.SUCCESS },
-    { id: '4', amount: 100, status: TransactionStatus.PENDING },
-    { id: '5', amount: 300, status: TransactionStatus.SUCCESS },
-  ];
+  private readonly transactions: Transaction[] = [];
+
+  
+  record(params: {
+    walletId: string;
+    userId: string;
+    amount: number;
+    type: TransactionType;
+    status: TransactionStatus;
+    description: string;
+  }): Transaction {
+    const transaction = new Transaction(params);
+    this.transactions.push(transaction);
+    return transaction;
+  }
+
+  
+  findByWallet(walletId: string): Transaction[] {
+    return this.transactions.filter((t) => t.walletId === walletId);
+  }
+
+
+  findByUser(userId: string): Transaction[] {
+    return this.transactions.filter((t) => t.userId === userId);
+  }
+
 
   getSummary(): TransactionSummary {
     const totalTransactions = this.transactions.length;
 
-    const successfulTransactions = this.transactions.filter(
-      (item) => item.status === TransactionStatus.SUCCESS,
+    const successful = this.transactions.filter(
+      (t) => t.status === TransactionStatus.SUCCESS,
+    );
+    const failed = this.transactions.filter(
+      (t) => t.status === TransactionStatus.FAILED,
     );
 
-    const totalSuccessfulTransactions = successfulTransactions.length;
-
-    const totalAmount = successfulTransactions.reduce(
-      (acc, item) => acc + item.amount,
-      0,
-    );
+    const totalAmount = successful.reduce((acc, t) => acc + t.amount, 0);
 
     return {
       totalTransactions,
-      totalSuccessfulTransactions,
+      totalSuccessfulTransactions: successful.length,
+      totalFailedTransactions: failed.length,
       totalAmount,
     };
   }

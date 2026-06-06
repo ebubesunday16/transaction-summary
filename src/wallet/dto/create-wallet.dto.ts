@@ -1,6 +1,16 @@
+import { IsNotEmpty, IsString, IsNumber, IsOptional, Min } from 'class-validator';
+
 export class CreateWalletDto {
-    id: string
-    userId: string
-    balance: number
-    currency: string
+  @IsNotEmpty()
+  @IsString()
+  userId: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  balance?: number;
+
+  @IsOptional()
+  @IsString()
+  currency?: string;
 }

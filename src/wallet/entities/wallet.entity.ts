@@ -1,6 +1,7 @@
 export class Wallet {
-    id: string
-    userId: string
-    balance: number
-    currency: string
+  id: string;
+  userId: string;
+  balance: number;
+  currency: string;
+  createdAt: Date;
 }
