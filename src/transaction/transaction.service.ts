@@ -3,7 +3,7 @@ import { Transaction, TransactionStatus, TransactionSummary } from './transactio
 
 @Injectable()
 export class TransactionService {
-  // Simulated transaction data — replace with DB calls in a real app
+  // Simulated transaction data 
   private readonly transactions: Transaction[] = [
     { id: '1', amount: 500, status: TransactionStatus.SUCCESS },
     { id: '2', amount: 200, status: TransactionStatus.FAILED },
