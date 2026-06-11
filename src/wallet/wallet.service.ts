@@ -61,27 +61,22 @@ export class WalletService {
       throw new NotFoundException(`Wallet with id "${id}" not found`);
     }
 
-    const previousBalance = wallet.balance;
-    const newBalance = updateWalletDto.balance;
-    const difference = newBalance - previousBalance;
-
-    // Determine whether this is a top-up (credit) or a reduction (debit)
-    const type = difference >= 0 ? TransactionType.CREDIT : TransactionType.DEBIT;
+    const { amount } = updateWalletDto;
 
     // Record the transaction before mutating the wallet
     const transaction = this.transactionService.record({
       walletId: wallet.id,
       userId: wallet.userId,
-      amount: Math.abs(difference),
-      type,
+      amount,
+      type: TransactionType.CREDIT,
       status: TransactionStatus.SUCCESS,
-      description: `Wallet balance updated from ${previousBalance} to ${newBalance} ${wallet.currency}`,
+      description: `Funded wallet with ${amount} ${wallet.currency}`,
     });
 
-    wallet.balance = newBalance;
+    wallet.balance += amount;
 
     return {
-      message: 'Wallet balance updated successfully',
+      message: 'Wallet funded successfully',
       wallet,
       transaction,
     };
